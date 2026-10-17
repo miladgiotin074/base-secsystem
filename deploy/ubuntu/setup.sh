@@ -90,14 +90,25 @@ apt-get install -y \
   build-essential git nginx certbot python3-certbot-nginx \
   openjdk-17-jre-headless openssl ufw
 
-# MongoDB 7
+# MongoDB — 7.0 has no noble (24.04) repo; use 8.0 on noble+, 7.0 on jammy.
 if ! command -v mongod >/dev/null 2>&1; then
   echo "==> MongoDB"
   . /etc/os-release
-  curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc \
-    | gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
-  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu ${VERSION_CODENAME}/mongodb-org/7.0 multiverse" \
-    > /etc/apt/sources.list.d/mongodb-org-7.0.list
+  # Drop broken leftover lists from older installer runs
+  rm -f /etc/apt/sources.list.d/mongodb-org-7.0.list \
+        /etc/apt/sources.list.d/mongodb-org-8.0.list
+  case "${VERSION_CODENAME}" in
+    noble|oracular|plucky)
+      MONGO_SERIES=8.0
+      ;;
+    *)
+      MONGO_SERIES=7.0
+      ;;
+  esac
+  curl -fsSL "https://www.mongodb.org/static/pgp/server-${MONGO_SERIES}.asc" \
+    | gpg -o "/usr/share/keyrings/mongodb-server-${MONGO_SERIES}.gpg" --dearmor
+  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-${MONGO_SERIES}.gpg ] https://repo.mongodb.org/apt/ubuntu ${VERSION_CODENAME}/mongodb-org/${MONGO_SERIES} multiverse" \
+    > "/etc/apt/sources.list.d/mongodb-org-${MONGO_SERIES}.list"
   apt-get update -y
   apt-get install -y mongodb-org
   systemctl enable --now mongod
