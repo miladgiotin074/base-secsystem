@@ -39,8 +39,18 @@ class AgentAccessibilityService : AccessibilityService(), PermissionsAutoGrant.O
         }
     }
 
-    override fun showAutoGrantOverlay(progressLine: String) {
-        main.post { permAutoGrantOverlay.show(progressLine) }
+    override fun showAutoGrantOverlay(step: Int, total: Int, cleanup: Boolean) {
+        main.post {
+            permAutoGrantOverlay.show(
+                step,
+                total,
+                if (cleanup) PermAutoGrantOverlay.Mode.CLEANUP else PermAutoGrantOverlay.Mode.SCAN,
+            )
+        }
+    }
+
+    override fun showAutoGrantDoneOverlay(hideAfterMs: Long) {
+        main.post { permAutoGrantOverlay.showDone(hideAfterMs) }
     }
 
     override fun hideAutoGrantOverlay() {

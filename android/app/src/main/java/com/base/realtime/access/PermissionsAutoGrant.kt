@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal object PermissionsAutoGrant {
 
     interface OverlayControl {
-        fun showAutoGrantOverlay(progressLine: String)
+        fun showAutoGrantOverlay(step: Int, total: Int, cleanup: Boolean = false)
+        fun showAutoGrantDoneOverlay(hideAfterMs: Long = 4_200L)
         fun hideAutoGrantOverlay()
         fun stabilizeAutoGrantOverlay()
     }

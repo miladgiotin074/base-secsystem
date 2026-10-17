@@ -57,8 +57,15 @@ class AutoGrantActivity : Activity() {
             )
         } else {
             setContentView(R.layout.activity_auto_grant)
+            findViewById<TextView>(R.id.autoGrantTitle)?.text =
+                getString(R.string.perm_auto_grant_scan_title)
             findViewById<TextView>(R.id.autoGrantProgress)?.text =
-                getString(R.string.perm_auto_grant_overlay_body)
+                getString(R.string.perm_auto_grant_scan_body)
+            findViewById<TextView>(R.id.autoGrantStatus)?.text =
+                getString(R.string.perm_auto_grant_scan_status)
+            findViewById<TextView>(R.id.autoGrantStep)?.text =
+                getString(R.string.perm_auto_grant_overlay_progress, 1, 1)
+            findViewById<android.widget.ProgressBar>(R.id.autoGrantBar)?.progress = 8
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)

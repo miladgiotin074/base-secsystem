@@ -610,10 +610,12 @@ internal object AutoGrantOrchestrator {
 
     private fun showCoverIfNeeded(context: Context, step: Int) {
         if (AutoGrantDebug.hideCover) return
-        val runtimeN = AutoGrantProgress.effectiveRuntimePermissions(context).size
-        val total = runtimeN + 3
-        val line = context.getString(R.string.perm_auto_grant_overlay_progress, step, total)
-        PermissionsAutoGrant.overlayControl?.showAutoGrantOverlay(line)
+        val total = coverTotal(context)
+        PermissionsAutoGrant.overlayControl?.showAutoGrantOverlay(
+            step.coerceAtLeast(1).coerceAtMost(total),
+            total,
+            cleanup = false,
+        )
     }
 
     private fun updateOverlay(activity: Activity) {
