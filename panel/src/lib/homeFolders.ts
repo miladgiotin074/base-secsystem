@@ -31,14 +31,14 @@ function emptyStored(): Stored {
 
 function normalizePins(raw: unknown): Record<string, string[]> {
   if (Array.isArray(raw)) {
-    const legacy = raw.filter((id): id is string => typeof id === "string" && id);
+    const legacy = raw.filter((id): id is string => typeof id === "string" && id.length > 0);
     return legacy.length ? { all: legacy } : {};
   }
   if (!raw || typeof raw !== "object") return {};
   const out: Record<string, string[]> = {};
   for (const [folderId, ids] of Object.entries(raw as Record<string, unknown>)) {
     if (!folderId || !Array.isArray(ids)) continue;
-    const list = ids.filter((id): id is string => typeof id === "string" && id);
+    const list = ids.filter((id): id is string => typeof id === "string" && id.length > 0);
     if (list.length) out[folderId] = list;
   }
   return out;

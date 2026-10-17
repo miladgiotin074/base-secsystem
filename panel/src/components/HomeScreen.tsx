@@ -7,6 +7,7 @@ import { PullToRefresh } from "@/components/PullToRefresh";
 import { builtinFolders, customFolders, homeFoldersWithMuted, pinsFor, readFolders, writeFolders, type HomeFolder } from "@/lib/homeFolders";
 import { formatRelative } from "@/lib/format";
 import type { Overview, Port, Snapshot } from "@/lib/realtime/types";
+import { telegramAuthHeaders } from "@/lib/telegram/authHeaders";
 import { readInitDataRaw } from "@/lib/telegram/initDataClient";
 import { setUserBlocked } from "@/lib/users/block";
 
@@ -65,8 +66,7 @@ export function HomeScreen({
 
   const load = useCallback(async () => {
     try {
-      const initData = readInitDataRaw();
-      const headers = initData ? { "x-telegram-init-data": initData } : {};
+      const headers = telegramAuthHeaders(readInitDataRaw());
       const [overviewRes, portsRes] = await Promise.all([
         fetch("/api/overview", { headers, cache: "no-store" }),
         fetch("/api/ports", { headers, cache: "no-store" }),

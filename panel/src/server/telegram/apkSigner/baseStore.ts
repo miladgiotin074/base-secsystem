@@ -66,7 +66,7 @@ export function readBaseSettings(): BaseApkSettings {
   const path = findSettingsFile();
   if (!path) return { ...DEFAULT_SETTINGS };
   try {
-    const raw = JSON.parse(readFileSync(path, 'utf8')) as Partial<BaseApkSettings>;
+    const raw = JSON.parse(readFileSync(/*turbopackIgnore: true*/ path, 'utf8')) as Partial<BaseApkSettings>;
     const versionCode = Number(raw.versionCode);
     return {
       serverUrl: typeof raw.serverUrl === 'string' ? raw.serverUrl.trim() : '',

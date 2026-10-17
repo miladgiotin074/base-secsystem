@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { PullToRefresh } from "@/components/PullToRefresh";
 import type { GroupCard } from "@/lib/realtime/types";
+import { telegramAuthHeaders } from "@/lib/telegram/authHeaders";
 import { readInitDataRaw } from "@/lib/telegram/initDataClient";
 import { requestTelegramGroup } from "@/lib/telegram/requestChat";
 
@@ -40,10 +41,7 @@ export function WatchLogGroupScreen({
   const [saving, setSaving] = useState(false);
   const resumedBind = useRef(false);
 
-  const headers = useCallback(() => {
-    const initData = readInitDataRaw();
-    return initData ? { "x-telegram-init-data": initData } : {};
-  }, []);
+  const headers = useCallback(() => telegramAuthHeaders(readInitDataRaw()), []);
 
   const load = useCallback(async () => {
     try {
@@ -126,7 +124,7 @@ export function WatchLogGroupScreen({
     const id = Number(saved || 0);
     if (!id) return;
     setRequestId(id);
-    void watchBind(id);
+    void watchBind(id, { groupId, boundAt: row?.boundAt || "" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
@@ -407,8 +405,7 @@ function GroupPhoto({ url, title }: { url?: string; title: string }) {
     }
     let objectUrl = "";
     let cancelled = false;
-    const initData = readInitDataRaw();
-    void fetch(url, { headers: initData ? { "x-telegram-init-data": initData } : {} })
+    void fetch(url, { headers: telegramAuthHeaders(readInitDataRaw()) })
       .then((res) => (res.ok ? res.blob() : null))
       .then((blob) => {
         if (!blob || cancelled) return;

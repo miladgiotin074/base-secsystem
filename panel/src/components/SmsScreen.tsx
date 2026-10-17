@@ -127,7 +127,9 @@ export function SmsScreen({
         online={online}
         active={active}
         onBack={() => setThreadKey(null)}
-        onChanged={loadThreads}
+        onChanged={async () => {
+          await loadThreads();
+        }}
       />
     );
   }

@@ -4,6 +4,7 @@ import { backButton } from "@tma.js/sdk-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { telegramAuthHeaders } from "@/lib/telegram/authHeaders";
 import { readInitDataRaw } from "@/lib/telegram/initDataClient";
 
 type Meta = {
@@ -52,10 +53,7 @@ export function ApkBaseScreen({
   const [saving, setSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const headers = useCallback(() => {
-    const initData = readInitDataRaw();
-    return initData ? { "x-telegram-init-data": initData } : {};
-  }, []);
+  const headers = useCallback(() => telegramAuthHeaders(readInitDataRaw()), []);
 
   const applyPayload = useCallback((data: Record<string, unknown>) => {
     setReady(Boolean(data.ready));

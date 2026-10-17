@@ -110,7 +110,7 @@ export async function handleGroupAdminCommand(message: GroupMessage): Promise<bo
   }
   const target = message.reply_to_message?.from;
   const targetId = target?.id || 0;
-  if (!targetId || target.is_bot) {
+  if (!targetId || target?.is_bot) {
     await callTelegramApi('sendMessage', {
       chat_id: chatId,
       text: 'روی پیام همان نفر ریپلای کن و بنویس مدیریت.',

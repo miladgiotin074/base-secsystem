@@ -86,7 +86,7 @@ export async function PUT(request: Request) {
     }
     patch.versionName = versionName;
   }
-  if (body.versionCode !== undefined && body.versionCode !== '') {
+  if (body.versionCode !== undefined && body.versionCode !== null && `${body.versionCode}` !== '') {
     const versionCode = Number(body.versionCode);
     if (!isValidVersionCode(versionCode)) {
       return NextResponse.json({ error: 'کد نسخه باید عدد ≥ ۱ باشد' }, { status: 400 });

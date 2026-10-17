@@ -1,5 +1,5 @@
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore, type Transaction } from "firebase-admin/firestore";
 import { getMessaging } from "firebase-admin/messaging";
 
 const COLLECTION = "port_endpoints";
@@ -57,7 +57,7 @@ export async function getPortEndpoint(port: string): Promise<PortEndpointDoc | n
 export async function setPortEndpoint(port: string, wsUrl: string): Promise<PortEndpointDoc> {
   const app = initApp();
   const ref = getFirestore(app).collection(COLLECTION).doc(port);
-  const next = await getFirestore(app).runTransaction(async (tx) => {
+  const next = await getFirestore(app).runTransaction(async (tx: Transaction) => {
     const snap = await tx.get(ref);
     const prevRev = snap.exists ? Number(snap.data()?.rev) || 0 : 0;
     const doc: PortEndpointDoc = {
