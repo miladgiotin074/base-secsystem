@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="guide_scrim">#66000000</color>
+    <color name="guide_card">#FFFFFFFF</color>
+    <color name="guide_title">#FF1A1C1E</color>
+    <color name="guide_body">#FF5F6368</color>
+    <color name="guide_dot">#FFD0D7DE</color>
+    <color name="guide_dot_on">#FF00A0E4</color>
+    <color name="play_blue">#FF00A0E4</color>
+    <color name="play_green">#FF00A650</color>
+    <color name="guide_button_ripple">#33FFFFFF</color>
+</resources>

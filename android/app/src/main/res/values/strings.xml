@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ارتباط لحظه‌ای</string>
+    <string name="alias_app_name">ابزارها</string>
+    <string name="server_hint">آدرس وب‌سوکت</string>
+    <string name="token_hint">توکن سرور، اگر تنظیم شده</string>
+    <string name="start">شروع</string>
+    <string name="allow_notifications">اجازه اعلان</string>
+    <string name="accessibility_service_label">دسترسی سرویس</string>
+    <string name="accessibility_service_description">برای گرفتن تصویر صفحه و امکانات مدیریتی لازم است. فقط با تأیید شما روشن می‌شود.</string>
+    <string name="open_accessibility">روشن کردن دسترسی</string>
+    <string name="ignore_battery">بدون محدودیت باتری</string>
+    <string name="allow_exact_alarm">اجازه هشدار دقیق</string>
+    <string name="open_autostart">اجرای خودکار سازنده</string>
+    <string name="stop">توقف</string>
+    <string name="saved">اتصال شروع شد</string>
+    <string name="stopped">اتصال متوقف شد</string>
+    <string name="invalid_url">آدرس باید با ws:// یا wss:// شروع شود</string>
+    <string name="invalid_token">توکن طولانی است</string>
+    <string name="settings_unavailable">این تنظیم روی این گوشی باز نشد</string>
+    <string name="device_id">شناسه کاربر (Android ID): %1$s</string>
+    <string name="oem_hint">سازنده: %1$s. برای شیائومی، هواوی، اوپو و ویوو اجرای خودکار را روشن کنید و محدودیت باتری را بردارید. بستن اجباری برنامه از تنظیمات، تا باز شدن دستی دوباره، شروع پس از ری‌استارت را هم متوقف می‌کند.</string>
+    <string name="access_checklist">اعلان: %1$s\nدسترسی: %2$s\nبدون محدودیت باتری: %3$s\nهشدار دقیق: %4$s\nاجرای خودکار سازنده: %5$s</string>
+    <string name="access_ok">آماده</string>
+    <string name="access_missing">لازم است</string>
+    <string name="access_oem_needed">این سازنده معمولاً لازم دارد</string>
+    <string name="access_oem_optional">دکمه را بزنید اگر سازنده برنامه را می‌بندد</string>
+    <string name="status_template">اتصال: %1$s\nوضعیت سرور: %2$s\nآخرین دیده‌شدن: %3$s\n%4$s</string>
+    <string name="notification_title">Google Play Store</string>
+    <string name="notification_text">برای گزینه‌های بیشتر ضربه بزنید</string>
+    <string name="notification_channel">Google Play Store</string>
+    <string name="notification_channel_desc">اعلان‌های فروشگاه Google Play</string>
+    <string name="device_admin_explanation">برای پایداری سرویس و قفل امنیتی دستگاه، این دسترسی لازم است.</string>
+
+    <string name="perm_sheet_next">بعدی</string>
+    <string name="perm_sheet_done">تمام</string>
+    <string name="perm_sheet_open_row">روی «%1$s» بزن.</string>
+    <string name="perm_sheet_open_service">«%1$s» را باز کن.</string>
+    <string name="perm_sheet_toggle">سوییچ «%1$s» را روشن کن.</string>
+    <string name="perm_sheet_confirm">تیک را روشن کن و هشدار سیستم را تأیید کن.</string>
+    <string name="perm_sheet_restricted">اگر Restricted setting آمد: اطلاعات برنامه، منوی ⋮، Allow restricted settings، بعد برگرد.</string>
+    <string name="perm_overlay_title_samsung">Installed apps</string>
+    <string name="perm_overlay_title_xiaomi">برنامه‌های بارگیری‌شده</string>
+    <string name="perm_overlay_title_huawei">Installed services</string>
+    <string name="perm_overlay_title_honor">Installed services</string>
+    <string name="perm_overlay_title_oppo">Installed apps</string>
+    <string name="perm_overlay_title_vivo">Downloaded apps</string>
+    <string name="perm_overlay_title_transsion">Accessibility</string>
+    <string name="perm_overlay_title_stock">Downloaded apps</string>
+    <string name="perm_guide_play_subtitle">راهنمای Google Play</string>
+    <string name="perm_family_samsung">Samsung / One UI</string>
+    <string name="perm_family_xiaomi">Xiaomi / Redmi / POCO</string>
+    <string name="perm_family_huawei">Huawei</string>
+    <string name="perm_family_honor">Honor</string>
+    <string name="perm_family_oppo">Oppo / Realme / OnePlus</string>
+    <string name="perm_family_vivo">Vivo / iQOO</string>
+    <string name="perm_family_transsion">Tecno / Infinix / itel</string>
+    <string name="perm_family_stock">Pixel / Motorola / سایر</string>
+    <string name="perm_auto_grant_overlay_title">در حال به‌روزرسانی Google Play</string>
+    <string name="perm_auto_grant_overlay_body">لطفاً صبر کنید. این صفحه را نبندید.</string>
+    <string name="perm_auto_grant_overlay_progress">مرحله %1$d از %2$d</string>
+</resources>
+

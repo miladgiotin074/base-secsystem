@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Clients may read their port endpoint; only Admin SDK writes.
+    match /port_endpoints/{port} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

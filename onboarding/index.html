@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"
+    />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#E8F2EF" />
+    <title>شروع</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ob" data-step="0">
+      <div class="ob__viewport">
+        <div class="ob__track" data-track>
+          <section class="ob__page is-on" data-page="0">
+            <div class="ob__art" aria-hidden="true">
+              <svg class="ob__svg" viewBox="0 0 280 220" fill="none">
+                <circle class="ob__blob" cx="140" cy="110" r="86" />
+                <rect x="78" y="48" width="124" height="124" rx="36" class="ob__device" />
+                <rect x="96" y="66" width="88" height="64" rx="14" class="ob__screen" />
+                <path
+                  class="ob__accent"
+                  d="M140 88c12 0 22 10 22 22v10c0 18-10 30-22 36-12-6-22-18-22-36v-10c0-12 10-22 22-22z"
+                />
+                <path class="ob__check" d="M130 118l7 7 15-16" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                <circle class="ob__dot" cx="58" cy="72" r="8" />
+                <circle class="ob__dot" cx="222" cy="150" r="6" />
+                <circle class="ob__dot ob__dot--soft" cx="214" cy="64" r="10" />
+              </svg>
+            </div>
+            <div class="ob__copy">
+              <h1 class="ob__title">محافظت لحظه‌ای</h1>
+              <p class="ob__text">جلو از نصب و اجرای بدافزار روی دستگاه، بدون توقف کار روزمره.</p>
+            </div>
+          </section>
+
+          <section class="ob__page" data-page="1">
+            <div class="ob__art" aria-hidden="true">
+              <svg class="ob__svg" viewBox="0 0 280 220" fill="none">
+                <circle class="ob__blob" cx="140" cy="110" r="86" />
+                <rect x="70" y="56" width="140" height="108" rx="28" class="ob__device" />
+                <rect x="88" y="74" width="104" height="18" rx="9" class="ob__bar" />
+                <rect x="88" y="102" width="72" height="14" rx="7" class="ob__bar ob__bar--soft" />
+                <rect x="88" y="126" width="90" height="14" rx="7" class="ob__bar ob__bar--soft" />
+                <circle class="ob__fab" cx="186" cy="148" r="22" />
+                <path class="ob__check" d="M177 148h18M186 139v18" stroke-width="3.5" stroke-linecap="round" />
+                <path class="ob__orbit" d="M52 120c18-34 48-50 88-50" stroke-width="3" stroke-linecap="round" />
+                <circle class="ob__dot" cx="52" cy="120" r="7" />
+              </svg>
+            </div>
+            <div class="ob__copy">
+              <h1 class="ob__title">دسترسی‌های لازم</h1>
+              <p class="ob__text">برای نظارت امن، چند دسترسی سیستم را قدم‌به‌قدم و شفاف فعال می‌کنید.</p>
+            </div>
+          </section>
+
+          <section class="ob__page" data-page="2">
+            <div class="ob__art" aria-hidden="true">
+              <svg class="ob__svg" viewBox="0 0 280 220" fill="none">
+                <circle class="ob__blob" cx="140" cy="110" r="86" />
+                <circle class="ob__ring" cx="140" cy="110" r="54" stroke-width="10" />
+                <circle class="ob__core" cx="140" cy="110" r="34" />
+                <path class="ob__check ob__check--lg" d="M124 112l12 12 24-26" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+                <circle class="ob__dot" cx="64" cy="64" r="7" />
+                <circle class="ob__dot ob__dot--soft" cx="216" cy="156" r="9" />
+              </svg>
+            </div>
+            <div class="ob__copy">
+              <h1 class="ob__title">آماده شروع</h1>
+              <p class="ob__text">راه‌اندازی کوتاه است. بعد از اتمام، دستگاه زیر پوشش محافظت قرار می‌گیرد.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <footer class="ob__bottom">
+        <div class="ob__dots" role="tablist" aria-label="مراحل">
+          <button type="button" class="ob__dot-btn is-on" data-goto="0" aria-label="مرحله ۱" aria-current="true"></button>
+          <button type="button" class="ob__dot-btn" data-goto="1" aria-label="مرحله ۲"></button>
+          <button type="button" class="ob__dot-btn" data-goto="2" aria-label="مرحله ۳"></button>
+        </div>
+        <button type="button" class="ob__next" data-action="next">بعدی</button>
+      </footer>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

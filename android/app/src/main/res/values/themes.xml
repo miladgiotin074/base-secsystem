@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Realtime" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
+
+    <style name="Theme.TransparentGuide" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!-- opaque: Activity شفاف از پس‌زمینه روی Home جلو نمی‌آید -->
+    <style name="Theme.AutoGrant" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">@color/guide_card</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:statusBarColor">@color/guide_card</item>
+        <item name="android:navigationBarColor">@color/guide_card</item>
+    </style>
+</resources>
+

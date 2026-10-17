@@ -1,0 +1,18 @@
+[Unit]
+Description=Base realtime (Go WebSocket + API)
+After=network.target mongod.service
+Wants=mongod.service
+
+[Service]
+Type=simple
+User=base
+Group=base
+WorkingDirectory=/opt/base/server
+EnvironmentFile=/opt/base/server/.env
+ExecStart=/opt/base/server/realtime
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>شناسایی دکمه اصلی و چشم — رصد</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #14212b;
+      --muted: #5a6b78;
+      --line: #d7e0e8;
+      --paper: #f6f8fa;
+      --card: #ffffff;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --warn: #b45309;
+      --warn-soft: #ffedd5;
+      --eye: #db2777;
+      --eye-soft: #fce7f3;
+      --main: #0369a1;
+      --main-soft: #e0f2fe;
+      --code: #0f172a;
+      --shadow: 0 12px 40px rgba(20, 33, 43, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 100% -10%, #d1fae5 0%, transparent 55%),
+        radial-gradient(900px 420px at -10% 20%, #e0f2fe 0%, transparent 50%),
+        var(--paper);
+      font-family: "Vazirmatn", "IBM Plex Sans", system-ui, sans-serif;
+      line-height: 1.75;
+    }
+
+    .wrap {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0 80px;
+    }
+
+    header.hero {
+      padding: 28px 0 36px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 36px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      margin-bottom: 12px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--accent);
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      line-height: 1.35;
+      font-weight: 700;
+    }
+    .lede {
+      margin: 0;
+      max-width: 46rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+    .source {
+      margin-top: 18px;
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--muted);
+      font-family: "IBM Plex Sans", monospace;
+      direction: ltr;
+    }
+
+    nav.toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    nav.toc a {
+      text-decoration: none;
+      color: var(--ink);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      transition: border-color .15s ease, transform .15s ease;
+    }
+    nav.toc a:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    nav.toc strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    nav.toc span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px 28px 24px;
+      margin-bottom: 22px;
+    }
+    section h2 {
+      margin: 0 0 8px;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section h2 .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .badge.eye { background: var(--eye-soft); color: var(--eye); }
+    .badge.main { background: var(--main-soft); color: var(--main); }
+    section h3 {
+      margin: 22px 0 8px;
+      font-size: 1.02rem;
+    }
+    p { margin: 0 0 12px; color: var(--ink); }
+    p.note { color: var(--muted); font-size: 0.95rem; }
+
+    .flow {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0 8px;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+    .step .n {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: white;
+      background: var(--accent);
+      font-family: "IBM Plex Sans", sans-serif;
+    }
+    .step.eye-step .n { background: var(--eye); }
+    .step.main-step .n { background: var(--main); }
+    .step h4 {
+      margin: 2px 0 4px;
+      font-size: 0.98rem;
+    }
+    .step p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .score {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: linear-gradient(180deg, #fff, var(--paper));
+    }
+    .score .pts {
+      font-family: "IBM Plex Sans", monospace;
+      font-weight: 600;
+      font-size: 1.35rem;
+      color: var(--eye);
+      direction: ltr;
+      text-align: right;
+    }
+    .score .lbl { font-size: 0.92rem; margin-top: 4px; }
+
+    .rules {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0;
+      display: grid;
+      gap: 8px;
+    }
+    .rules li {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--paper);
+      border-right: 3px solid var(--accent);
+    }
+    .rules.eye li { border-right-color: var(--eye); }
+    .rules.main li { border-right-color: var(--main); }
+    .rules li code, p code, .mono {
+      font-family: "IBM Plex Sans", ui-monospace, monospace;
+      font-size: 0.88em;
+      direction: ltr;
+      display: inline;
+      background: #eef2f6;
+      padding: 1px 6px;
+      border-radius: 6px;
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--warn-soft);
+      border: 1px solid #fdba74;
+      color: #7c2d12;
+      font-size: 0.95rem;
+    }
+    .callout strong { color: var(--warn); }
+
+    .mock {
+      margin: 18px 0 6px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: #0b1220;
+      color: #e2e8f0;
+      padding: 18px;
+      direction: ltr;
+      font-family: "IBM Plex Sans", sans-serif;
+    }
+    .phone {
+      max-width: 320px;
+      margin: 0 auto;
+      background: #111827;
+      border-radius: 28px;
+      padding: 18px 16px 22px;
+      border: 1px solid #334155;
+    }
+    .phone .bar {
+      height: 10px;
+      width: 72px;
+      border-radius: 99px;
+      background: #1f2937;
+      margin: 0 auto 18px;
+    }
+    .field {
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      color: #94a3b8;
+      font-size: 13px;
+      position: relative;
+    }
+    .field.pwd { padding-left: 48px; }
+    .eye-hit {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(219, 39, 119, 0.35);
+      border: 2px solid #f472b6;
+      box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.2);
+    }
+    .btn-main {
+      margin-top: 14px;
+      background: rgba(3, 105, 161, 0.35);
+      border: 2px solid #38bdf8;
+      color: #e0f2fe;
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+    }
+    .legend {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 14px;
+      font-size: 12px;
+      color: #94a3b8;
+      flex-wrap: wrap;
+    }
+    .legend i {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .legend .e { background: #f472b6; }
+    .legend .m { background: #38bdf8; }
+
+    footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">رصد نشست · Accessibility</div>
+      <h1>روند شناسایی دکمهٔ اصلی و دکمهٔ چشم</h1>
+      <p class="lede">
+        این سند منطق فعلی <span class="mono">FormScan.look()</span> در کلاینت اندروید را توضیح می‌دهد:
+        از پیمایش درخت Accessibility تا انتخاب مستطیل دکمهٔ ورود و آیکن نمایش رمز.
+      </p>
+      <div class="source">
+        <span class="chip">android/.../watch/FormScan.kt</span>
+        <span class="chip">EyeReveal.kt · WatchController.kt</span>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="فهرست">
+      <a href="#pipeline"><strong>۱. خط لوله</strong><span>از پنجره تا FormLook</span></a>
+      <a href="#password"><strong>۲. فیلد رمز</strong><span>کدام EditText؟</span></a>
+      <a href="#eye"><strong>۳. چشم</strong><span>امتیازدهی و آستانه</span></a>
+      <a href="#main"><strong>۴. دکمه اصلی</strong><span>فیلتر و اولویت</span></a>
+      <a href="#usage"><strong>۵. استفاده در رصد</strong><span>پوشش و reveal</span></a>
+    </nav>
+
+    <section id="pipeline">
+      <h2>خط لولهٔ کلی <span class="badge">FormScan</span></h2>
+      <p>
+        ورودی فقط <strong>پکیج اپ تحت رصد</strong> و سرویس Accessibility است.
+        خروجی یک <span class="mono">FormLook</span> با چهار بخش است:
+        <span class="mono">main</span>، <span class="mono">eye</span>، <span class="mono">password</span>، و لیست فیلدهای editable.
+      </p>
+      <div class="flow">
+        <div class="step">
+          <div class="n">1</div>
+          <div>
+            <h4>پنجره‌های APPLICATION همان پکیج</h4>
+            <p>فقط <span class="mono">TYPE_APPLICATION</span> با <span class="mono">packageName == pkg</span>. ریشهٔ هر پنجره جمع می‌شود.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <div>
+            <h4>DFS روی درخت نودها → Fact</h4>
+            <p>برای هر نود با ابعاد مثبت: متن، hint، desc، viewId، کلاس، clickable/editable/password/checkable و مختصات صفحه.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">3</div>
+          <div>
+            <h4>فیلتر EditTextها (از بالا به پایین)</h4>
+            <p>اگر هیچ فیلد editable نباشد، <span class="mono">main/eye/password</span> همه null می‌مانند.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">4</div>
+          <div>
+            <h4>password → eye → main</h4>
+            <p>ترتیب اجباری است: اول فیلد رمز، بعد چشم نسبت به همان فیلد، بعد دکمهٔ اصلی با حذف تداخل با چشم.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="password">
+      <h2>شناسایی فیلد رمز <span class="badge">password</span></h2>
+      <ul class="rules">
+        <li>نود <strong>editable</strong> است (<span class="mono">isEditable</span> یا کلاس شامل <span class="mono">EditText</span>).</li>
+        <li>و یکی از این‌ها: <span class="mono">isPassword == true</span>، یا در blob متن/آیدی/hint کلمه‌های
+          <span class="mono">password / passwd / رمز / گذرواژه</span> دیده شود.</li>
+        <li>اگر چند فیلد رمز باشد، <strong>کوچک‌ترین مساحت</strong> انتخاب می‌شود
+          (<span class="mono">minBy(width × height)</span>) — معمولاً همان فیلد رمز لاگین است نه کادر بزرگ.</li>
+      </ul>
+      <p class="note">بدون فیلد رمز معتبر، چشم اصلاً جستجو نمی‌شود.</p>
+    </section>
+
+    <section id="eye">
+      <h2>شناسایی دکمهٔ چشم <span class="badge eye">eye</span></h2>
+      <p>
+        روی <strong>همهٔ Factها</strong> (نه فقط دکمه‌ها) امتیاز <span class="mono">eyeScore</span> حساب می‌شود
+        و بالاترین امتیاز انتخاب می‌شود؛ فقط اگر امتیاز نهایی <strong>≥ ۴۵</strong> باشد.
+      </p>
+
+      <h3>حذف قطعی (امتیاز صفر)</h3>
+      <ul class="rules eye">
+        <li>خود نود password یا editable باشد.</li>
+        <li>عرض نود ≥ عرض فیلد رمز باشد (چشم باید باریک‌تر از فیلد باشد).</li>
+        <li>عرض نود صفر یا منفی باشد.</li>
+      </ul>
+
+      <h3>جدول امتیاز</h3>
+      <div class="score-grid">
+        <div class="score">
+          <div class="pts">+120</div>
+          <div class="lbl">کلمهٔ کلیدی در label (آیدی/متن/desc/hint)</div>
+          <p class="note" style="margin:8px 0 0">visibility, visible, show, hide, password_toggle, toggle, eye, reveal، نمایش، مخفی، چشم</p>
+        </div>
+        <div class="score">
+          <div class="pts">+80</div>
+          <div class="lbl">کنار انتهای فیلد رمز در همان ردیف</div>
+          <p class="note" style="margin:8px 0 0"><span class="mono">atFieldEnd</span>: اختلاف Y ≤ ارتفاع فیلد؛ فاصلهٔ X تا چپ/راست فیلد ≤ ۵۶dp</p>
+        </div>
+        <div class="score">
+          <div class="pts">+40</div>
+          <div class="lbl">Image / Check / checkable</div>
+          <p class="note" style="margin:8px 0 0">آیکن‌های تصویری یا سوییچ‌مانند برای toggle رمز رایج‌اند.</p>
+        </div>
+        <div class="score">
+          <div class="pts">+30</div>
+          <div class="lbl">clickable بودن نود</div>
+          <p class="note" style="margin:8px 0 0"><span class="mono">isClickable</span> یا وجود اکشن <span class="mono">ACTION_CLICK</span>.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>آستانه:</strong> بدون کلمهٔ کلیدی، فقط با «کنار فیلد + کلیک‌پذیر» می‌توان به ۴۵ رسید (۸۰+۳۰).
+        نود وسط صفحه معمولاً حذف می‌شود چون <span class="mono">atFieldEnd</span> نمی‌گیرد.
+      </div>
+
+      <div class="mock" aria-hidden="true">
+        <div class="phone">
+          <div class="bar"></div>
+          <div class="field">نام کاربری</div>
+          <div class="field pwd">•••••••• <span class="eye-hit" title="eye"></span></div>
+          <div class="btn-main">ورود</div>
+          <div class="legend">
+            <span><i class="e"></i>چشم (mark / hit)</span>
+            <span><i class="m"></i>دکمه اصلی</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="main">
+      <h2>شناسایی دکمهٔ اصلی <span class="badge main">main</span></h2>
+      <p>
+        تابع <span class="mono">pickMainButton</span> از بین Factها کاندیدا می‌سازد،
+        ردیف‌های متنی زائد را هرس می‌کند، سپس نزدیک‌ترین دکمهٔ «شبیه ورود» از بالا را برمی‌گرداند.
+      </p>
+
+      <h3>۱) تعریف محدودهٔ فرم</h3>
+      <ul class="rules main">
+        <li>Editهایی که عرض &gt; ۴۰ و روی صفحه دیده می‌شوند.</li>
+        <li><span class="mono">formBottom</span> = پایین‌ترین لبهٔ این فیلدها.</li>
+        <li>حداقل عرض دکمه: حدود <strong>۲۸٪ عرض صفحه</strong> (یا اگر loginHint باشد، حداقل ۴۸px).</li>
+      </ul>
+
+      <h3>۲) فیلتر کاندیدا</h3>
+      <ul class="rules main">
+        <li>editable یا password نباشد.</li>
+        <li>با مستطیل چشم تداخل نداشته باشد (و همان نود چشم نباشد).</li>
+        <li>کلیک‌پذیر باشد؛ مگر اینکه loginHint باشد و اکشن کلیک داشته باشد.</li>
+        <li>ارتفاع بین ۲۴px و نصف عرض صفحه.</li>
+        <li>بالای دکمه تقریباً زیر فرم باشد:
+          <span class="mono">top ≥ formBottom − height/4</span> (یعنی دکمهٔ بالای فیلدها رد می‌شود).</li>
+        <li>مرکز هیچ فیلد editable داخل دکمه نباشد (کادر دور فرم نیست).</li>
+      </ul>
+
+      <h3>۳) تشخیص «ورود» — <span class="mono">isLoginMain</span></h3>
+      <ul class="rules main">
+        <li>viewId شامل <span class="mono">login</span> باشد، یا</li>
+        <li>متن/desc شامل <strong>«ورود»</strong> باشد، یا</li>
+        <li>یک TextView با متن «ورود» داخل جعبهٔ ۱۲dp دور همان نود باشد (دکمهٔ بدون متن روی لایهٔ زیر).</li>
+      </ul>
+
+      <h3>۴) هرس ردیف متنی نازک</h3>
+      <p class="note">
+        اگر ارتفاع کاندیدا ≤ حدود ۳۶dp باشد و loginHint نباشد، فقط وقتی نگه داشته می‌شود که
+        کاندیدای دیگری دقیقاً زیرش نباشد — تا برچسب متنی بالای دکمه به‌جای خود دکمه انتخاب نشود.
+      </p>
+
+      <h3>۵) انتخاب نهایی</h3>
+      <p>
+        بین باقی‌مانده‌ها: اول اولویت با <strong>loginHint</strong>، بعد <strong>بالاترین top</strong>
+        (نزدیک‌ترین دکمهٔ ورود به فیلدها از بالا).
+      </p>
+    </section>
+
+    <section id="usage">
+      <h2>استفاده در جریان رصد</h2>
+      <div class="flow">
+        <div class="step main-step">
+          <div class="n">M</div>
+          <div>
+            <h4>MainTapOverlay روی main</h4>
+            <p>
+              وقتی هم <span class="mono">main</span> و هم <span class="mono">password</span> پیدا شود
+              و (چشم باشد یا رمز هنوز سانسور باشد)، یک لایهٔ شفاف فقط روی دکمهٔ اصلی می‌نشیند
+              تا قبل از ارسال، <span class="mono">EyeReveal</span> اجرا شود.
+            </p>
+          </div>
+        </div>
+        <div class="step eye-step">
+          <div class="n">E</div>
+          <div>
+            <h4>EyeReveal</h4>
+            <p>
+              اگر متن فیلد هنوز masked باشد (• ● * …)، روی چشم کلیک می‌شود، متن خوانده می‌شود،
+              دوباره چشم کلیک می‌شود تا masked برگردد، بعد ضربهٔ دکمهٔ اصلی replay می‌شود.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">D</div>
+          <div>
+            <h4>دیباگ موقت — <span class="mono">watchMarkEye</span></h4>
+            <p>
+              اگر در <span class="mono">config.json</span> مقدار <span class="mono">watchMarkEye: true</span> باشد،
+              مستطیل چشم با کادر صورتی غیرقابل‌لمس مشخص می‌شود تا صحت تشخیص دیده شود.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>نکتهٔ عملی:</strong> اشتباه رایج در تشخیص چشم معمولاً از کم‌بودن امتیاز
+        (کلمهٔ کلیدی OEM غایب + فاصله از لبهٔ فیلد) یا قاطی شدن با آیکن کناری دیگر است.
+        برای دکمهٔ اصلی، متن «ورود» روی لایهٔ جدا یا عرض کمتر از ۲۸٪ صفحه باعث از دست رفتن کاندیدا می‌شود.
+      </div>
+    </section>
+
+    <footer>
+      تولیدشده از منطق فعلی مخزن Base · <span class="mono">FormScan.kt</span>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,4 @@
+work/
+temp_apk_signer/
+signed_apks/
+*.exe
