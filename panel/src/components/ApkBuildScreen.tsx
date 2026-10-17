@@ -4,6 +4,7 @@ import { backButton } from "@tma.js/sdk-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { telegramAuthHeaders } from "@/lib/telegram/authHeaders";
 import { readInitDataRaw } from "@/lib/telegram/initDataClient";
 
 export function ApkBuildScreen({
@@ -68,24 +69,28 @@ export function ApkBuildScreen({
     setError("");
     setHint("");
     try {
-      const initData = readInitDataRaw();
+      if (!/^[A-Za-z0-9]{20}$/.test(portCode)) {
+        setError("کد پورت نامعتبر است. از دکمه «فایل» داخل گروه پورت باز کن.");
+        return;
+      }
       const form = new FormData();
       form.append("port", portCode);
       form.append("label", name);
       form.append("icon", iconBlob, "icon.png");
       const res = await fetch("/api/apk/build", {
         method: "POST",
-        headers: initData ? { "x-telegram-init-data": initData } : {},
+        headers: telegramAuthHeaders(readInitDataRaw()),
         body: form,
+        cache: "no-store",
       });
       const body = (await res.json().catch(() => ({}))) as { error?: string; fileName?: string };
       if (!res.ok) {
-        setError(body.error || "ساخت ناموفق بود.");
+        setError(body.error || `ساخت ناموفق بود (${res.status}).`);
         return;
       }
       setHint(`ارسال شد: ${body.fileName || name}`);
-    } catch {
-      setError("ساخت ناموفق بود.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ساخت ناموفق بود.");
     } finally {
       setBusy(false);
     }
