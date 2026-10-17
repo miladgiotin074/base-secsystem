@@ -16,6 +16,10 @@ BRANCH="${BRANCH:-main}"
 echo "=== Base Ubuntu update ==="
 echo "Repo: ${REPO_ROOT}"
 
+# Avoid "dubious ownership" when root pulls a repo owned by another user.
+git config --global --add safe.directory "${REPO_ROOT}" 2>/dev/null || true
+git config --global --add safe.directory "${APP_ROOT}" 2>/dev/null || true
+
 if [[ -d "${REPO_ROOT}/.git" ]]; then
   echo "==> git pull"
   git -C "${REPO_ROOT}" fetch origin

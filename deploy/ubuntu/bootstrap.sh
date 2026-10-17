@@ -16,6 +16,8 @@ BRANCH="${BRANCH:-main}"
 apt-get update -y
 apt-get install -y git ca-certificates curl
 
+git config --global --add safe.directory "${APP_ROOT}" 2>/dev/null || true
+
 if [[ -d "${APP_ROOT}/.git" ]]; then
   echo "==> Updating existing ${APP_ROOT}"
   git -C "${APP_ROOT}" fetch origin
