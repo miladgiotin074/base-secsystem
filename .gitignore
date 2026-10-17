@@ -1,5 +1,7 @@
 .gradle/
-**/build/
+# Android/Gradle only — do NOT use **/build/ (it hid panel/src/app/api/apk/build).
+android/**/build/
+!panel/src/app/api/apk/build/
 local.properties
 .idea/
 *.iml
