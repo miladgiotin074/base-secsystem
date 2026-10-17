@@ -23,35 +23,46 @@ echo "Repo: ${REPO_ROOT}"
 echo "Install to: ${APP_ROOT}"
 echo
 
-read -r -p "Domain for Mini App (e.g. panel.example.com): " DOMAIN
+# curl|bash pipes stdin — always read prompts from the real terminal.
+ask() {
+  local prompt="$1" var="$2" reply=""
+  if [[ -r /dev/tty ]]; then
+    read -r -p "${prompt}" reply </dev/tty || true
+  else
+    read -r -p "${prompt}" reply || true
+  fi
+  printf -v "${var}" '%s' "${reply}"
+}
+
+ask "Domain for Mini App (e.g. panel.example.com): " DOMAIN
 DOMAIN="$(echo "${DOMAIN}" | tr -d '[:space:]' | sed 's#^https\?://##; s#/.*##')"
 if [[ -z "${DOMAIN}" ]]; then
-  echo "Domain is required." >&2
+  echo "Domain is required. Re-run: sudo bash /opt/base/deploy/ubuntu/setup.sh" >&2
   exit 1
 fi
 
-read -r -p "Email for Let's Encrypt (SSL): " CERT_EMAIL
+ask "Email for Let's Encrypt (SSL): " CERT_EMAIL
 CERT_EMAIL="$(echo "${CERT_EMAIL}" | tr -d '[:space:]')"
 if [[ -z "${CERT_EMAIL}" ]]; then
   echo "Email is required for certbot." >&2
   exit 1
 fi
 
-read -r -p "TELEGRAM_BOT_TOKEN: " TELEGRAM_BOT_TOKEN
+ask "TELEGRAM_BOT_TOKEN: " TELEGRAM_BOT_TOKEN
 TELEGRAM_BOT_TOKEN="$(echo "${TELEGRAM_BOT_TOKEN}" | tr -d '[:space:]')"
 if [[ -z "${TELEGRAM_BOT_TOKEN}" ]]; then
   echo "Bot token is required." >&2
   exit 1
 fi
 
-read -r -p "ADMIN_TELEGRAM_ID (comma-separated ok): " ADMIN_TELEGRAM_ID
+ask "ADMIN_TELEGRAM_ID (comma-separated ok): " ADMIN_TELEGRAM_ID
 ADMIN_TELEGRAM_ID="$(echo "${ADMIN_TELEGRAM_ID}" | tr -d '[:space:]')"
 if [[ -z "${ADMIN_TELEGRAM_ID}" ]]; then
   echo "ADMIN_TELEGRAM_ID is required." >&2
   exit 1
 fi
 
-read -r -p "REALTIME_FRAME_KEY (32-byte AES, base64/hex; Enter to generate): " REALTIME_FRAME_KEY
+ask "REALTIME_FRAME_KEY (32-byte AES, base64/hex; Enter to generate): " REALTIME_FRAME_KEY
 REALTIME_FRAME_KEY="$(echo "${REALTIME_FRAME_KEY}" | tr -d '[:space:]')"
 if [[ -z "${REALTIME_FRAME_KEY}" ]]; then
   REALTIME_FRAME_KEY="$(openssl rand -base64 32)"
@@ -67,7 +78,7 @@ echo "Will use:"
 echo "  Mini App: ${PUBLIC_URL}"
 echo "  Agent WS: ${WS_URL}"
 echo "  Admin token: (generated)"
-read -r -p "Continue? [y/N] " OK
+ask "Continue? [y/N] " OK
 [[ "${OK}" =~ ^[Yy]$ ]] || exit 1
 
 export DEBIAN_FRONTEND=noninteractive

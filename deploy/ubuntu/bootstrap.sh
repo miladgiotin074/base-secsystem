@@ -27,4 +27,5 @@ else
   git clone --branch "${BRANCH}" --depth 1 "${REPO_URL}" "${APP_ROOT}"
 fi
 
-exec bash "${APP_ROOT}/deploy/ubuntu/setup.sh"
+# Keep /dev/tty so setup prompts work even when launched via curl|bash.
+exec bash "${APP_ROOT}/deploy/ubuntu/setup.sh" </dev/tty
