@@ -15,6 +15,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google-cloud/firestore": "^9.3.1",
     "@tailwindcss/postcss": "^4",
     "@tma.js/init-data-node": "^2.0.8",
     "@tma.js/sdk-react": "^3.0.23",
