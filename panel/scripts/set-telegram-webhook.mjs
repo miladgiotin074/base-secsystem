@@ -31,7 +31,7 @@ if (!webhookUrl.startsWith('https://')) {
 const webhook = await telegramApi(token, 'setWebhook', {
   url: webhookUrl,
   secret_token: secret,
-  allowed_updates: ['message'],
+  allowed_updates: ['message', 'callback_query'],
   drop_pending_updates: true,
 });
 

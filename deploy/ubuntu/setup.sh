@@ -305,9 +305,13 @@ fi
 
 echo "==> Telegram webhook + menu button"
 WEBHOOK_URL="${PUBLIC_URL}/api/bot"
+# Must match panel telegramWebhookSecret() or /api/bot returns 401 and /start stays silent.
+WEBHOOK_SECRET="$(printf 'webhook:%s' "${TELEGRAM_BOT_TOKEN}" | openssl dgst -sha256 -hex | awk '{print $NF}' | cut -c1-48)"
 curl -fsS "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" \
   -d "url=${WEBHOOK_URL}" \
-  -d "allowed_updates=[\"message\",\"callback_query\"]" >/dev/null || true
+  -d "secret_token=${WEBHOOK_SECRET}" \
+  -d "allowed_updates=[\"message\",\"callback_query\"]" \
+  -d "drop_pending_updates=true" >/dev/null || true
 curl -fsS "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setChatMenuButton" \
   -H 'Content-Type: application/json' \
   -d "{\"menu_button\":{\"type\":\"web_app\",\"text\":\"پنل\",\"web_app\":{\"url\":\"${PUBLIC_URL}\"}}}" >/dev/null || true
