@@ -53,6 +53,12 @@ internal object GuideActionExecutor {
                 ) {
                     return Result(true, "battery_allow")
                 }
+                // DEVICE_ADMIN: bare S = wait (MIUI Confirm countdown), not a failed scroll.
+                if (phase.equals("DEVICE_ADMIN", ignoreCase = true) &&
+                    target.ifBlank { nodeId }.trim().length < 2
+                ) {
+                    return Result(true, "admin_wait")
+                }
                 scrollToFind(service, target.ifBlank { nodeId }, phase)
             }
             "done" -> Result(true, "done")

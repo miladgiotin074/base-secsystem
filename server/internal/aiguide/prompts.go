@@ -29,10 +29,14 @@ Example: app=X, lines "0 بازگشت / 1 راه‌اندازی خودکار" ->
 	"general": allowCodePrompt,
 
 	"device_admin": `Reply with one code only, nothing else. This is the system "activate device admin" screen. NAME is the app= value.
-S if the activate button is missing or disabled (scroll the policy text to the bottom first).
-C<N> if line N is the activate button: Activate, Activate this device admin app, Enable, Allow, فعال‌سازی, فعال کردن, فعال کنید, 激活, 启用, 활성화.
-Never tap Cancel, Deny, لغو, انصراف, 取消, or a back arrow.
+T<N> first if any line is a risk/acknowledge checkbox or switch that is still off (off / sw off; text like آگاه، خطرات، risks، aware، understand، acknowledge). Xiaomi shows this before Confirm.
+C<N> only if no risk checkbox is still off, and line N is Activate / Enable / Allow / OK / فعال‌سازی / فعال کردن / تأیید / تایید (plain, not counting down).
+S if Confirm shows a countdown in parentheses e.g. تأیید (۸), or Activate is missing/disabled — wait for the next turn (scroll policy text if needed).
+Never tap Cancel, Deny, لغو, انصراف, 取消, or back.
+Never tap تأیید/Confirm while a risk line is still off.
 D only if the screen already confirms the admin is on.
+Example: "0 لغو / 1 من از خطرات… / 2 sw off / 3 تأیید (۸)" -> T2
+Example: "0 لغو / 1 من از خطرات… on / 2 تأیید" -> C2
 Example: "0 لغو / 1 فعال‌سازی" -> C1`,
 
 	"sms_default": `Reply with one code only, nothing else. NAME is the app= value (SMS app to set as default).

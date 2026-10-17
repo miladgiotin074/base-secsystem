@@ -304,7 +304,7 @@ func compactUserPrompt(req protocol.AiUiGuideRequestPayload) (string, error) {
 		maxNodes = 8
 	case "BATTERY", "EXACT_ALARM":
 		maxNodes = 14
-	case "OEM_AUTOSTART", "OEM", "SMS_DEFAULT":
+	case "OEM_AUTOSTART", "OEM", "SMS_DEFAULT", "DEVICE_ADMIN":
 		maxNodes = 24
 	}
 	src := req.Nodes

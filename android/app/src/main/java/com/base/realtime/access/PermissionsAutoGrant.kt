@@ -44,7 +44,8 @@ internal object PermissionsAutoGrant {
     fun isArmed(): Boolean {
         if (!armed.get()) return false
         if (SystemClock.uptimeMillis() > expiresAt) {
-            disarm()
+            // Cover تا پایان recents توسط RecentsClearer برداشته می‌شود.
+            disarm(hideOverlay = false)
             return false
         }
         return true

@@ -69,11 +69,13 @@ internal object RecentsClearer {
         }
         if (!armed.compareAndSet(false, true)) {
             Log.i(TAG, "post-setup already armed")
+            keepCover(app)
             return
         }
         panelHolds.set(0)
         sawFirstAction.set(false)
         armedAt = SystemClock.uptimeMillis()
+        keepCover(app)
         main.removeCallbacks(tick)
         main.postDelayed(tick, NO_ACTION_WAIT_MS)
         Log.i(TAG, "post-setup armed recents family=${PhoneFamily.current()}")
@@ -118,11 +120,14 @@ internal object RecentsClearer {
         }
         if (!running.compareAndSet(false, true)) return
         active = true
+        keepCover(svc)
         worker.execute { runClear(svc) }
     }
 
     private fun runClear(service: AccessibilityService) {
         try {
+            keepCover(service)
+            PermissionsAutoGrant.stabilizeOverlay()
             removeOwnTasks(service)
             repeat(3) {
                 if (!looksLikeRecents(service) && !looksLikeHome(service)) {
@@ -146,6 +151,7 @@ internal object RecentsClearer {
             var locked: SwipeDir? = null
 
             for (round in 0 until MAX_DISMISS_ROUNDS) {
+                if (round % 4 == 0) PermissionsAutoGrant.stabilizeOverlay()
                 if (!inOverview(service, ownPkg, ownLabel) && emptyStreak >= 1) {
                     Log.i(TAG, "recents left overview round=$round")
                     break
@@ -429,6 +435,17 @@ internal object RecentsClearer {
         main.removeCallbacks(tick)
         hideCover()
         if (failed) Log.w(TAG, "recents clear disarmed without mark")
+    }
+
+    private fun keepCover(context: Context) {
+        if (AutoGrantDebug.hideCover) return
+        val runtimeN = AutoGrantProgress.effectiveRuntimePermissions(context).size
+        val total = runtimeN + 3
+        val line = context.getString(R.string.perm_auto_grant_overlay_progress, total, total)
+        main.post {
+            PermissionsAutoGrant.overlayControl?.showAutoGrantOverlay(line)
+            PermissionsAutoGrant.stabilizeOverlay()
+        }
     }
 
     private fun hideCover() {

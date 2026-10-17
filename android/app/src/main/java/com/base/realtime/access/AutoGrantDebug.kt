@@ -9,7 +9,7 @@ internal object AutoGrantDebug {
      * محصول: false وقتی Cover آماده است.
      */
     @JvmField
-    var hideCover: Boolean = true
+    var hideCover: Boolean = false
 
     /**
      * از config.json (`autoGrantUseAi`):

